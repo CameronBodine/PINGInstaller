@@ -10,7 +10,10 @@ def install_housekeeping():
     subprocess.run('''python -m pip install --upgrade pip''', shell=True)
 
 def conda_env_exists(env_name):
-    result = subprocess.run('conda env list', shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    conda_key = os.environ.get('CONDA_EXE', 'conda')
+    print(f"conda_key: {conda_key}")
+
+    result = subprocess.run('''"{}" env list'''.format(conda_key), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     envs = result.stdout.splitlines()
     for env in envs:
         if re.search(rf'^{env_name}\s', env):
