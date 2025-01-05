@@ -43,9 +43,16 @@ def install_update(yml):
     ####################
     # Make the conda key
     ## This is the 'base' of the currently used conda prompt
+    ## Tested with miniconda and miniforge.
+    ## Assume works for Anaconda.
     env_dir = os.environ['CONDA_PREFIX']
 
     conda_key = os.path.join(env_dir, 'Scripts', 'conda.exe')
+
+    # Above doesn't work for ArcGIS conda installs
+    ## Make sure conda exists, if not, change to CONDA
+    if not os.path.exists(conda_key):
+        conda_key = os.environ.get('CONDA_EXE', 'conda')
 
     print('conda_key:', conda_key)
 
