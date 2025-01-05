@@ -18,7 +18,7 @@ setup(
     packages=find_packages(),
     # data_files=[("pingmapper_config", ["pinginstaller/PINGMapper.yml"])],
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
