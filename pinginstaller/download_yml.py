@@ -1,6 +1,8 @@
 import os, sys
-import tempfile
 import urllib.request
+
+from pathlib import Path
+home_path = os.path.join(Path.home())
 
 def get_yml(url):
 
@@ -9,21 +11,10 @@ def get_yml(url):
         yml_data = f.read().decode('utf-8')
 
         # Make a temporary file
-        try:
-            with tempfile.TemporaryDirectory(delete=False) as tempdir:
-
-                temp_file = os.path.join(tempdir, 'conda.yml')
-                
-                # Write yml data to temporary file
-                with open(temp_file, 'w') as t:
-                    t.write(yml_data)
-        except:
-            with tempfile.TemporaryDirectory() as tempdir:
-
-                temp_file = os.path.join(tempdir, 'conda.yml')
-                
-                # Write yml data to temporary file
-                with open(temp_file, 'w') as t:
-                    t.write(yml_data)           
+        temp_file = os.path.join(home_path, 'pinginstaller_conda_file.yml')
+        
+        # Write yml data to temporary file
+        with open(temp_file, 'w') as t:
+            t.write(yml_data)
 
     return temp_file

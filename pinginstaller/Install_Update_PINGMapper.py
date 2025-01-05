@@ -63,6 +63,7 @@ def install_update(yml):
     # Download yml
 
     # Download yml if necessary
+    del_yml = False
     if yml.startswith("https:") or yml.startswith("http:"):
         print("Downloading:", yml)
 
@@ -72,7 +73,8 @@ def install_update(yml):
         from pinginstaller.download_yml import get_yml
         yml = get_yml(yml)
 
-    print("Downloaded yml:", yml)
+        print("Downloaded yml:", yml)
+        del_yml = True
 
     ######################
     # Get environment name
@@ -92,5 +94,10 @@ def install_update(yml):
         print(f"Creating '{env_name}' environment...")
         # subprocess.run([os.path.join(directory, "Install.bat"), conda_base, conda_key, yml], shell=True)
         install(conda_key, yml)
+
+    #########
+    # Cleanup
+    if del_yml:
+        os.remove(yml)
 
     
