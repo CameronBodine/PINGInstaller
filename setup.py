@@ -16,7 +16,7 @@ setup(
     long_description=LONG_DESCRIPTION,
     long_description_content_type='text/markdown',
     packages=find_packages(),
-    data_files=[("pingmapper_config", ["pinginstaller/PINGMapper.yml"])],
+    # data_files=[("pingmapper_config", ["pinginstaller/PINGMapper.yml"])],
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Programming Language :: Python :: 3",

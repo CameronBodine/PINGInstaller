@@ -6,13 +6,15 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PACKAGE_DIR = os.path.dirname(SCRIPT_DIR)
 sys.path.append(PACKAGE_DIR)
 
-env_dir = os.environ['CONDA_PREFIX']
-pingmapper_yml_name = "PINGMapper.yml"
-yml = os.path.join(env_dir, 'pingmapper_config', pingmapper_yml_name)
-
-print('Env yml:', yml)
+# Get yml
+if len(sys.argv) == 1:
+    yml = "https://github.com/CameronBodine/PINGMapper/blob/dev_v4/pingmapper/conda/PINGMapper.yml"
+else:
+    yml = sys.argv[1]
 
 def main(yml):
+
+    print('Env yml:', yml)
 
     from pinginstaller.Install_Update_PINGMapper import install_update
     install_update(yml)

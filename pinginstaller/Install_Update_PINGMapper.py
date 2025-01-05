@@ -1,5 +1,6 @@
 import os, sys
 import subprocess, re
+import json
 
 def install_housekeeping(conda_key):
 
@@ -26,7 +27,7 @@ def install(conda_key, yml):
 
 def update(conda_key, yml):
 
-    subprocess.run('''"{}" env update --file "{}"'''.format(conda_key, yml), shell=True)
+    subprocess.run('''"{}" env update --file "{}" --prune'''.format(conda_key, yml), shell=True)
 
     subprocess.run('conda env list', shell=True)
 
@@ -35,8 +36,6 @@ def update(conda_key, yml):
 
 # def install_update(conda_base, conda_key):
 def install_update(yml):
-
-    env_name = 'ping'
 
     subprocess.run('conda env list', shell=True)
 
@@ -59,6 +58,28 @@ def install_update(yml):
     ##############
     # Housekeeping
     install_housekeeping(conda_key)
+
+    ##############
+    # Download yml
+
+    # Download yml if necessary
+    if yml.startswith("https:") or yml.startswith("http:"):
+        print("Downloading:", yml)
+
+        # Make sure ?raw=true at end
+        if not yml.endswith("?raw=true"):
+            yml += "?raw=true"
+        from pinginstaller.download_yml import get_yml
+        yml = get_yml(yml)
+
+    print("Downloaded yml:", yml)
+
+    ######################
+    # Get environment name
+    with open(yml, 'r') as f:
+        for line in f:
+            if line.startswith('name:'):
+                env_name = line.split('name:')[-1].strip()
 
     ######################################
     # Install or update `ping` environment
