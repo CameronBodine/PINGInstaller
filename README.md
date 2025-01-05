@@ -1,4 +1,7 @@
 # PINGInstaller
+
+[![PyPI - Version](https://img.shields.io/pypi/v/pinginstaller?style=flat-square&label=Latest%20Version%20(PyPi))](https://pypi.org/project/pinginstaller/)
+
 Light-weight application for installing [PINGMapper](https://github.com/CameronBodine/PINGMapper) and associated packages. `PINGInstaller` is designed to install a `conda` environment from a yml specified as a URL or localy hosted yml.
 
 Example yml file structure:
