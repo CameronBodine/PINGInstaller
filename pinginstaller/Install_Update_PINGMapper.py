@@ -1,17 +1,13 @@
 import os, sys
 import subprocess, re
 
-def install_housekeeping():
-    conda_key = os.environ.get('CONDA_EXE', 'conda')
-    print(f"conda_key: {conda_key}")
+def install_housekeeping(conda_key):
 
     subprocess.run('''"{}" update -y conda'''.format(conda_key), shell=True)
     subprocess.run('''"{}" clean -y --all'''.format(conda_key), shell=True)
     subprocess.run('''python -m pip install --upgrade pip''', shell=True)
 
-def conda_env_exists(env_name):
-    conda_key = os.environ.get('CONDA_EXE', 'conda')
-    print(f"conda_key: {conda_key}")
+def conda_env_exists(conda_key, env_name):
 
     result = subprocess.run('''"{}" env list'''.format(conda_key), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     envs = result.stdout.splitlines()
@@ -20,9 +16,7 @@ def conda_env_exists(env_name):
             return True
     return False
 
-def install(yml):
-    conda_key = os.environ.get('CONDA_EXE', 'conda')
-    print(f"conda_key: {conda_key}")
+def install(conda_key, yml):
 
     subprocess.run('''"{}" env create --file {}'''.format(conda_key, yml), shell=True)
 
@@ -30,9 +24,7 @@ def install(yml):
 
     return
 
-def update(yml):
-    conda_key = os.environ.get('CONDA_EXE', 'conda')
-    print(f"conda_key: {conda_key}")
+def update(conda_key, yml):
 
     subprocess.run('''"{}" env update --file {}'''.format(conda_key, yml), shell=True)
 
@@ -48,16 +40,29 @@ def install_update(yml):
 
     subprocess.run('conda env list', shell=True)
 
-    install_housekeeping()
+    ####################
+    # Make the conda key
+    ## This is the 'base' of the currently used conda prompt
+    env_dir = os.environ['CONDA_PREFIX']
 
-    if conda_env_exists(env_name):
+    conda_key = os.path.join(env_dir, 'Scripts', 'conda.exe')
+
+    print('conda_key:', conda_key)
+
+    ##############
+    # Housekeeping
+    install_housekeeping(conda_key)
+
+    ######################################
+    # Install or update `ping` environment
+    if conda_env_exists(conda_key, env_name):
         print(f"Updating '{env_name}' environment ...")
         # subprocess.run([os.path.join(directory, "Update.bat"), conda_base, conda_key, yml], shell=True)
-        update(yml)
+        update(conda_key, yml)
         
     else:
         print(f"Creating '{env_name}' environment...")
         # subprocess.run([os.path.join(directory, "Install.bat"), conda_base, conda_key, yml], shell=True)
-        install(yml)
+        install(conda_key, yml)
 
     

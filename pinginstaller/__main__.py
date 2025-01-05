@@ -10,6 +10,8 @@ env_dir = os.environ['CONDA_PREFIX']
 pingmapper_yml_name = "PINGMapper.yml"
 yml = os.path.join(env_dir, 'pingmapper_config', pingmapper_yml_name)
 
+print('Env yml:', yml)
+
 def main(yml):
 
     from pinginstaller.Install_Update_PINGMapper import install_update
