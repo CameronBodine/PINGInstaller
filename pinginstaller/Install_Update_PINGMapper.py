@@ -18,7 +18,7 @@ def conda_env_exists(conda_key, env_name):
 
 def install(conda_key, yml):
 
-    subprocess.run('''"{}" env create --file {}'''.format(conda_key, yml), shell=True)
+    subprocess.run('''"{}" env create --file "{}"'''.format(conda_key, yml), shell=True)
 
     subprocess.run('conda env list', shell=True)
 
@@ -26,7 +26,7 @@ def install(conda_key, yml):
 
 def update(conda_key, yml):
 
-    subprocess.run('''"{}" env update --file {}'''.format(conda_key, yml), shell=True)
+    subprocess.run('''"{}" env update --file "{}"'''.format(conda_key, yml), shell=True)
 
     subprocess.run('conda env list', shell=True)
 
