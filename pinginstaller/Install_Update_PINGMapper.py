@@ -1,6 +1,9 @@
 import os, sys
 import subprocess, re
-import json
+import platform
+
+from pathlib import Path
+home_path = os.path.join(Path.home())
 
 def install_housekeeping(conda_key):
 
@@ -99,5 +102,18 @@ def install_update(yml):
     # Cleanup
     if del_yml:
         os.remove(yml)
+
+    #################
+    # Create Shortcut
+    if "Windows" in platform.system():
+        ending = '.bat'
+    else:
+        ending = '.sh'
+    shortcut = os.path.join(home_path, 'Desktop', 'PINGWizard'+ending)
+    print('\n\nCreating PINGWizard shortcut at: {}'.format(shortcut))
+
+    subprocess.run('{} run -n {} python -m pingwizard shortcut'.format(conda_key, env_name))
+
+
 
     
