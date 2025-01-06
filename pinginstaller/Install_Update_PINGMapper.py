@@ -112,7 +112,7 @@ def install_update(yml):
     shortcut = os.path.join(home_path, 'Desktop', 'PINGWizard'+ending)
     print('\n\nCreating PINGWizard shortcut at: {}'.format(shortcut))
 
-    subprocess.run('{} run -n {} python -m pingwizard shortcut'.format(conda_key, env_name), shell=True)
+    subprocess.run('''"{}" run -n {} python -m pingwizard shortcut'''.format(conda_key, env_name), shell=True)
 
 
 
