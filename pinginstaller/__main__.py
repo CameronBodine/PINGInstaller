@@ -8,7 +8,7 @@ sys.path.append(PACKAGE_DIR)
 
 # Get yml
 if len(sys.argv) == 1:
-    yml = "https://github.com/CameronBodine/PINGMapper/blob/dev_v4/pingmapper/conda/PINGMapper.yml"
+    yml = "https://github.com/CameronBodine/PINGMapper/blob/main/pingmapper/conda/PINGMapper.yml"
 else:
     yml = sys.argv[1]
 
