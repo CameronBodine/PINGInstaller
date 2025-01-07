@@ -2,8 +2,7 @@ import os, sys
 import subprocess, re
 import platform
 
-from pathlib import Path
-home_path = os.path.join(Path.home())
+home_path = os.path.expanduser('~')
 
 def install_housekeeping(conda_key):
 

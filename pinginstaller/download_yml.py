@@ -1,8 +1,7 @@
 import os, sys
 import urllib.request
 
-from pathlib import Path
-home_path = os.path.join(Path.home())
+home_path = os.path.expanduser('~')
 
 def get_yml(url):
 
