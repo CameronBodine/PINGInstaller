@@ -4,6 +4,26 @@ import platform
 
 home_path = os.path.expanduser('~')
 
+def get_conda_key():
+
+    ####################
+    # Make the conda key
+    ## This is the 'base' of the currently used conda prompt
+    ## Tested with miniconda and miniforge.
+    ## Assume works for Anaconda.
+    env_dir = os.environ['CONDA_PREFIX']
+
+    conda_key = os.path.join(env_dir, 'Scripts', 'conda.exe')
+
+    # Above doesn't work for ArcGIS conda installs
+    ## Make sure conda exists, if not, change to CONDA
+    if not os.path.exists(conda_key):
+        conda_key = os.environ.get('CONDA_EXE', 'conda')
+
+    print('conda_key:', conda_key)
+
+    return conda_key
+
 def install_housekeeping(conda_key):
 
     subprocess.run('''"{}" update -y conda'''.format(conda_key), shell=True)
@@ -21,19 +41,35 @@ def conda_env_exists(conda_key, env_name):
 
 def install(conda_key, yml):
 
+    # Install the ping environment from downloaded yml
     subprocess.run('''"{}" env create --file "{}"'''.format(conda_key, yml), shell=True)
 
+    # List the environments
     subprocess.run('conda env list', shell=True)
 
     return
 
 def update(conda_key, yml):
 
+    # Update the ping environment from downloaded yml
     subprocess.run('''"{}" env update --file "{}" --prune'''.format(conda_key, yml), shell=True)
 
+    # List the environments
     subprocess.run('conda env list', shell=True)
 
     return
+
+def update_pinginstaller():
+    '''
+    Called from PINGWizard prior to updating the environment
+    '''
+    print('Updating PINGInstaller...')
+
+    # Get the conda key
+    conda_key = get_conda_key()
+
+    # Update pinginstaller
+    subprocess.run('''"{}" run -n ping pip install pinginstaller -U'''.format(conda_key))
 
 
 # def install_update(conda_base, conda_key):
@@ -41,21 +77,8 @@ def install_update(yml):
 
     subprocess.run('conda env list', shell=True)
 
-    ####################
-    # Make the conda key
-    ## This is the 'base' of the currently used conda prompt
-    ## Tested with miniconda and miniforge.
-    ## Assume works for Anaconda.
-    env_dir = os.environ['CONDA_PREFIX']
-
-    conda_key = os.path.join(env_dir, 'Scripts', 'conda.exe')
-
-    # Above doesn't work for ArcGIS conda installs
-    ## Make sure conda exists, if not, change to CONDA
-    if not os.path.exists(conda_key):
-        conda_key = os.environ.get('CONDA_EXE', 'conda')
-
-    print('conda_key:', conda_key)
+    # Get the conda key
+    conda_key = get_conda_key()
 
     ##############
     # Housekeeping
