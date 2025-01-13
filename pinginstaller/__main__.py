@@ -8,18 +8,22 @@ sys.path.append(PACKAGE_DIR)
 
 # Get yml
 if len(sys.argv) == 1:
-    yml = "https://github.com/CameronBodine/PINGMapper/blob/main/pingmapper/conda/PINGMapper.yml"
+    arg = "https://github.com/CameronBodine/PINGMapper/blob/main/pingmapper/conda/PINGMapper.yml"
 else:
-    yml = sys.argv[1]
+    arg = sys.argv[1]
 
-def main(yml):
+def main(arg):
 
-    print('Env yml:', yml)
+    if arg == 'check':
+        from pinginstaller.check_available_updates import check
+        check()
+    else:
+        print('Env yml:', arg)
 
-    from pinginstaller.Install_Update_PINGMapper import install_update
-    install_update(yml)
+        from pinginstaller.Install_Update_PINGMapper import install_update
+        install_update(arg)
 
     return
 
 if __name__ == '__main__':
-    main(yml)
+    main(arg)
