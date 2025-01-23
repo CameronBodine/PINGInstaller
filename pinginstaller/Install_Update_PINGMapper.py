@@ -51,10 +51,6 @@ def install(conda_key, yml):
 
 def update(conda_key, yml):
 
-    # Remove pingmapper (issues with userparams)
-
-    subprocess.run('''"{}" run -n ping pip uninstall pingmapper -y'''.format(conda_key))
-
     # Update the ping environment from downloaded yml
     subprocess.run('''"{}" env update --file "{}" --prune'''.format(conda_key, yml), shell=True)
 
