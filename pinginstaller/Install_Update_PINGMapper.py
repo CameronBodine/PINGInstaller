@@ -44,6 +44,9 @@ def install(conda_key, yml):
     # Install the ping environment from downloaded yml
     subprocess.run('''"{}" env create --file "{}"'''.format(conda_key, yml), shell=True)
 
+    # Install pysimplegui
+    subprocess.run('''"{}" run -n ping pip install --upgrade -i https://PySimpleGUI.net/install PySimpleGUI'''.format(conda_key))
+
     # List the environments
     subprocess.run('conda env list', shell=True)
 
@@ -53,6 +56,9 @@ def update(conda_key, yml):
 
     # Update the ping environment from downloaded yml
     subprocess.run('''"{}" env update --file "{}" --prune'''.format(conda_key, yml), shell=True)
+
+    # Install pysimplegui
+    subprocess.run('''"{}" run -n ping pip install --upgrade -i https://PySimpleGUI.net/install PySimpleGUI'''.format(conda_key))
 
     # List the environments
     subprocess.run('conda env list', shell=True)
