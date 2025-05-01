@@ -29,7 +29,7 @@ If you recieve an error about the projection, try reinstalling pyproj with:
 
 6) `pip install pyproj --force`
 
-PINGMapper should be ready to go! When you want to us PM:
+PINGMapper should be ready to go! When you want to use PM:
 
 1) Go to "Start" > "All" > "ArcGIS" > "Python Command Prompt"
 2) `activate ping`
