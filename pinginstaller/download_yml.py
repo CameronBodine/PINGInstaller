@@ -11,6 +11,10 @@ def get_yml(url):
 
         # Make a temporary file
         temp_file = os.path.join(home_path, 'pinginstaller_conda_file.yml')
+
+        # Remove file if it exists
+        if os.path.exists(temp_file):
+            os.remove(temp_file)
         
         # Write yml data to temporary file
         with open(temp_file, 'w') as t:
