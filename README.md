@@ -10,20 +10,20 @@ Example yml file structure:
 name: ping
 channels:
   - conda-forge
-  - defaults
 dependencies:
-  - python < 3.13
+  - python<3.13
   - gdal
   - numpy
   - git
   - pandas
   - geopandas
-  - pyproj
+  - pyproj<3.7.1
   - scikit-image
   - joblib
   - matplotlib
   - rasterio
   - h5py
+  - opencv
   - pip
   - pip:
       - pingverter
@@ -35,7 +35,7 @@ dependencies:
       - tensorflow
       - tf-keras
       - transformers
-      - pysimplegui == 5.0.*
+      - rsa
 ```
 
 The special thing about `PINGInstaller` is that it will install the `conda` environment based on the `conda` prompt it is launched from. This enables end-users with multiple `conda` installations to choose the flavor of `conda` as needed. 
