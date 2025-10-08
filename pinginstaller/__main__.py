@@ -35,6 +35,11 @@ def main(arg):
         from pinginstaller.Install_Update import fix_ghostvision_cpu
         fix_ghostvision_cpu()
 
+    elif arg == 'pingtile':
+        yml = 'https://github.com/PINGEcosystem/PINGTile/blob/main/pingtile/conda/pingtile.yml'
+        from pinginstaller.Install_Update import install_update
+        install_update(yml)
+
     else:
         print('Env yml:', arg)
 
