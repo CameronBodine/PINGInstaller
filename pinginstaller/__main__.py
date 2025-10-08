@@ -17,10 +17,28 @@ def main(arg):
     if arg == 'check':
         from pinginstaller.check_available_updates import check
         check()
+
+    elif arg == 'ghostvision-gpu':
+        yml = 'https://github.com/PINGEcosystem/GhostVision/blob/main/ghostvision/conda/ghostvision_install_gpu.yml'
+        from pinginstaller.Install_Update import install_update
+
+        install_update(yml)
+    elif arg == 'ghostvision':
+        yml = 'https://github.com/PINGEcosystem/GhostVision/blob/main/ghostvision/conda/ghostvision_install.yml'
+        from pinginstaller.Install_Update import install_update
+        install_update(yml)
+
+        from pinginstaller.Install_Update import fix_ghostvision_cpu
+        fix_ghostvision_cpu()
+
+    elif arg == 'fixghostvision':
+        from pinginstaller.Install_Update import fix_ghostvision_cpu
+        fix_ghostvision_cpu()
+
     else:
         print('Env yml:', arg)
 
-        from pinginstaller.Install_Update_PINGMapper import install_update
+        from pinginstaller.Install_Update import install_update
         install_update(arg)
 
     return
