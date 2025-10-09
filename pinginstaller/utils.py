@@ -25,9 +25,14 @@ def get_conda_key():
 
 def install_housekeeping(conda_key):
 
-    subprocess.run('''"{}" update -y conda'''.format(conda_key), shell=True)
+    # subprocess.run('''"{}" update -y conda'''.format(conda_key), shell=True)
+    subprocess.run('''"{}" update -y --all'''.format(conda_key), shell=True)
     subprocess.run('''"{}" clean -y --all'''.format(conda_key), shell=True)
     subprocess.run('''python -m pip install --upgrade pip''', shell=True)
+
+    print('\n\nRolling back conda-libmamba-solver...')
+    libmamba = 'conda-libmamba-solver<25.4.0'
+    subprocess.run('''"{}" install -y "{}"'''.format(conda_key, libmamba), shell=True)
 
 def conda_env_exists(conda_key, env_name):
 
