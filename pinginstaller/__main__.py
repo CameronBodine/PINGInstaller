@@ -40,6 +40,11 @@ def main(arg):
         from pinginstaller.Install_Update import install_update
         install_update(yml)
 
+    elif arg == 'rockmapper':
+        yml = 'https://github.com/PINGEcosystem/RockMapper/blob/main/rockmapper/conda/RockMapper.yml'
+        from pinginstaller.Install_Update import install_update
+        install_update(yml)
+
     else:
         print('Env yml:', arg)
 
