@@ -43,7 +43,8 @@ def update_pinginstaller():
     conda_key = get_conda_key()
 
     # Update pinginstaller
-    subprocess.run([conda_key, 'run', '-n', 'ping', 'pip', 'install', 'pinginstaller', '-U'])
+    # subprocess.run([conda_key, 'run', '-n', 'ping', 'pip', 'install', 'pinginstaller', '-U'])
+    subprocess.run([conda_key, 'run', '-n', 'base', 'pip', 'install', 'pinginstaller', '-U'])
 
 
 # def install_update(conda_base, conda_key):
