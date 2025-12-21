@@ -17,7 +17,7 @@ if 'PINGINSTALLER_VERBOSITY' not in os.environ:
     os.environ['PINGINSTALLER_VERBOSITY'] = 'debug'
 
 # Parse args: support verbosity anywhere and optional yml/alias
-default_yml = "https://github.com/CameronBodine/PINGMapper/blob/main/pingmapper/conda/PINGMapper.yml"
+default_yml = "https://raw.githubusercontent.com/CameronBodine/PINGMapper/main/pingmapper/conda/PINGMapper.yml"
 arg = None
 for tok in sys.argv[1:]:
     t = tok.strip().lower()

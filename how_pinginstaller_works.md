@@ -210,32 +210,34 @@ if not os.path.exists(conda_key):
 ### `get_mamba_or_conda()`
 **Purpose**: Prefer mamba over conda for speed
 
-**Logic**:
+**Logic** (checks in order):
 ```python
-# Check for mamba.exe in Scripts
-env_dir = os.environ.get('CONDA_PREFIX', '')
-mamba_key = os.path.join(env_dir, 'Scripts', 'mamba.exe')
-if os.path.exists(mamba_key):
-    return mamba_key
-
-# Try mamba command
+# 1. Try mamba command in PATH
 try:
-    subprocess.run(['mamba', '--version'], timeout=5)
+    subprocess.run(['mamba', '--version'], timeout=2)
     return 'mamba'
 except:
     pass
 
-# Fallback to conda
+# 2. Check for mamba.bat in condabin (miniforge/miniconda)
+env_dir = os.environ.get('CONDA_PREFIX', '')
+base_dir = env_dir.split('envs')[0].rstrip(os.sep)
+mamba_bat = os.path.join(base_dir, 'condabin', 'mamba.bat')
+if os.path.exists(mamba_bat):
+    return mamba_bat
+
+# 3. Check for mamba.exe in Scripts
+mamba_exe = os.path.join(base_dir, 'Scripts', 'mamba.exe')
+if os.path.exists(mamba_exe):
+    return mamba_exe
+
+# 4. Fallback to conda
 return get_conda_key()
 ```
 
-**Returns**: Path to mamba or conda executable
+**Returns**: Path to mamba (command, batch, or exe) or conda executable
 
----
-
-### `split_conda_pip_yml(yml_path)` - REMOVED
-
-**Rationale**: With constrained versions in PINGMapper.yml, conda solver is fast enough to handle conda and pip dependencies together. Testing showed 3-minute solves are acceptable and simpler codebase is preferable.
+**Why multiple checks?**: Different conda distributions place mamba in different locations. Miniforge uses `condabin/mamba.bat`, while other installs may use `Scripts/mamba.exe`.
 
 ---
 

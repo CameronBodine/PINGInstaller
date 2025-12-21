@@ -30,23 +30,33 @@ def get_mamba_or_conda():
     """
     Detect if mamba is available and return the appropriate command.
     Mamba is preferred over conda for faster environment solving.
+    Checks: 1) mamba command in PATH, 2) mamba.bat in condabin, 3) mamba.exe in Scripts, 4) fallback to conda
     """
-    env_dir = os.environ.get('CONDA_PREFIX', '')
-    if env_dir:
-        env_dir = env_dir.split('envs')[0].rstrip(os.sep)
-        mamba_key = os.path.join(env_dir, 'Scripts', 'mamba.exe')
-        if os.path.exists(mamba_key):
-            print('Using mamba for faster installation')
-            return mamba_key
-    
-    # Try mamba command directly
+    # Try mamba command directly first (should work if in PATH)
     try:
-        result = subprocess.run(['mamba', '--version'], capture_output=True, text=True, timeout=5)
+        result = subprocess.run(['mamba', '--version'], capture_output=True, text=True, timeout=2, shell=False)
         if result.returncode == 0:
             print('Using mamba for faster installation')
             return 'mamba'
-    except (FileNotFoundError, subprocess.TimeoutExpired):
+    except Exception:
         pass
+    
+    # Try mamba.bat from condabin (common in miniforge/minicondan)
+    env_dir = os.environ.get('CONDA_PREFIX', '')
+    if env_dir:
+        base_dir = env_dir.split('envs')[0].rstrip(os.sep)
+        mamba_bat = os.path.join(base_dir, 'condabin', 'mamba.bat')
+        if os.path.exists(mamba_bat):
+            print('Using mamba for faster installation')
+            return mamba_bat
+    
+    # Try to find mamba.exe in Scripts
+    if env_dir:
+        base_dir = env_dir.split('envs')[0].rstrip(os.sep)
+        mamba_key = os.path.join(base_dir, 'Scripts', 'mamba.exe')
+        if os.path.exists(mamba_key):
+            print('Using mamba for faster installation')
+            return mamba_key
     
     # Fall back to conda
     return get_conda_key()
