@@ -121,9 +121,42 @@ def conda_env_exists(conda_key, env_name):
     print(f"Debug: conda_key = {conda_key}")
     print(f"Debug: Found environments:")
     for env in envs:
-        print(f"  {env}")
-        if re.search(rf'^{env_name}\s', env):
-            print(f"Debug: Found matching environment!")
+        line = env.strip()
+        print(f"  {line}")
+
+        # Skip headers and separators
+        if not line or line.startswith(('#', 'Name', '-')):
+            continue
+
+        # Split on whitespace; first token may be '*' for active env
+        parts = line.split()
+        # Example lines:
+        # "base                 *   Z:\\miniforge3"
+        # "ping                     Z:\\miniforge3\\envs\\ping"
+        if not parts:
+            continue
+
+        # Remove active marker if present
+        name_token = parts[0]
+        if name_token == '*':
+            if len(parts) >= 2:
+                name_token = parts[1]
+                path_token = parts[2] if len(parts) >= 3 else ''
+            else:
+                name_token = ''
+                path_token = ''
+        else:
+            path_token = parts[-1] if len(parts) >= 2 else ''
+
+        # Match by name or by path suffix
+        if name_token == env_name:
+            print("Debug: Found matching environment by name!")
             return True
+        # Normalize separators for comparison
+        env_suffix = os.sep + env_name
+        if path_token.replace('/', os.sep).endswith(env_suffix):
+            print("Debug: Found matching environment by path!")
+            return True
+
     print(f"Debug: Environment '{env_name}' not found")
     return False
