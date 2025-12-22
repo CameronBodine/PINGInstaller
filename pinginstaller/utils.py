@@ -117,7 +117,13 @@ def conda_env_exists(conda_key, env_name):
 
     result = subprocess.run('''"{}" env list'''.format(conda_key), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     envs = result.stdout.splitlines()
+    print(f"Debug: Looking for environment '{env_name}'")
+    print(f"Debug: conda_key = {conda_key}")
+    print(f"Debug: Found environments:")
     for env in envs:
+        print(f"  {env}")
         if re.search(rf'^{env_name}\s', env):
+            print(f"Debug: Found matching environment!")
             return True
+    print(f"Debug: Environment '{env_name}' not found")
     return False
