@@ -12,6 +12,9 @@ def get_conda_key():
     ## Assume works for Anaconda.
     env_dir = os.environ['CONDA_PREFIX']
 
+    # If in an environment, go back to base
+    env_dir = env_dir.split('envs')[0].rstrip(os.sep)
+
     conda_key = os.path.join(env_dir, 'Scripts', 'conda.exe')
 
     # Above doesn't work for ArcGIS conda installs
