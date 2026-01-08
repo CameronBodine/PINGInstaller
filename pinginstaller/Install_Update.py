@@ -51,7 +51,7 @@ def update(conda_key, yml, env_name='ping'):
         verbosity = get_verbosity_flags(conda_key)
         if verbosity:
             print(f"Verbosity enabled: {verbosity}")
-        subprocess.run('''"{}" {} env update --file "{}" --prune'''.format(conda_key, verbosity, yml), shell=True, check=True)
+        subprocess.run('''"{}" {} env update --file "{}" --prune -y'''.format(conda_key, verbosity, yml), shell=True, check=True)
 
         # Install pysimplegui
         print("Updating PySimpleGUI...")
