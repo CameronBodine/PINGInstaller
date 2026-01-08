@@ -162,7 +162,8 @@ def install_update(yml):
             shortcut = os.path.join(home_path, 'PINGWizard'+ending)
             print('\n\nCreating PINGWizard shortcut at: {}'.format(shortcut))
 
-            subprocess.run('''"{}" run -n {} python -m pingwizard shortcut'''.format(conda_key, env_name), shell=True, check=True)
+            # subprocess.run('''"{}" run -n {} python -m pingwizard shortcut'''.format(conda_key, env_name), shell=True, check=True)
+            subprocess.run([conda_key, 'run', '-n', env_name, 'python', '-m', 'pingwizard', 'shortcut'], check=True)
 
             print('\n\nShortcut created:', shortcut)
         except subprocess.CalledProcessError as e:
