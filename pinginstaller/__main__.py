@@ -6,11 +6,39 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PACKAGE_DIR = os.path.dirname(SCRIPT_DIR)
 sys.path.append(PACKAGE_DIR)
 
-# Get yml
-if len(sys.argv) == 1:
-    arg = "https://github.com/CameronBodine/PINGMapper/blob/main/pingmapper/conda/PINGMapper.yml"
-else:
-    arg = sys.argv[1]
+"""
+Support an optional verbosity flag via CLI:
+  python -m pinginstaller <yml_or_alias> [-v|--verbose|-vv|-vvv|--debug]
+This sets PINGINSTALLER_VERBOSITY for detailed solver output.
+"""
+
+# Default to highest verbosity unless overridden
+if 'PINGINSTALLER_VERBOSITY' not in os.environ:
+    os.environ['PINGINSTALLER_VERBOSITY'] = 'debug'
+
+# Parse args: support verbosity anywhere and optional yml/alias
+default_yml = "https://raw.githubusercontent.com/CameronBodine/PINGMapper/main/pingmapper/conda/PINGMapper.yml"
+arg = None
+for tok in sys.argv[1:]:
+    t = tok.strip().lower()
+    if t in ('-v', '--verbose'):
+        os.environ['PINGINSTALLER_VERBOSITY'] = 'v'
+        continue
+    if t in ('-vv',):
+        os.environ['PINGINSTALLER_VERBOSITY'] = 'vv'
+        continue
+    if t in ('-vvv', '--debug'):
+        os.environ['PINGINSTALLER_VERBOSITY'] = 'debug'
+        continue
+    if t in ('-q', '--quiet'):
+        os.environ['PINGINSTALLER_VERBOSITY'] = 'quiet'
+        continue
+    # First non-verbosity token is treated as yml/alias
+    if arg is None:
+        arg = tok
+
+if arg is None:
+    arg = default_yml
 
 def main(arg):
 
