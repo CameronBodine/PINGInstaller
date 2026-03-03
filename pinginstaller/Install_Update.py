@@ -28,7 +28,7 @@ def install(conda_key, yml, env_name='ping'):
 
         # Install pysimplegui
         print("Installing PySimpleGUI...")
-        subprocess.run([conda_key, 'run', '-n', env_name, 'pip', 'install', '--upgrade', '-i', 'https://PySimpleGUI.net/install', 'PySimpleGUI'], check=True)
+        subprocess.run([conda_key, 'run', '-n', env_name, 'pip', 'install', '--upgrade', 'https://github.com/CameronBodine/PINGInstaller/releases/download/utils/PySimpleGUI-5.0.8-py3-none-any.whl'], check=True)
 
         # List the environments
         subprocess.run('conda env list', shell=True)
