@@ -108,10 +108,6 @@ def install_update(yml):
     del_yml = False
     if yml.startswith("https:") or yml.startswith("http:"):
         print("Downloading:", yml)
-
-        # Make sure ?raw=true at end
-        if not yml.endswith("?raw=true"):
-            yml += "?raw=true"
         from pinginstaller.download_yml import get_yml
         yml = get_yml(yml)
 
