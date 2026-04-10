@@ -3,6 +3,22 @@ import os
 import subprocess
 import re
 
+
+def get_default_env_prefix(env_name: str) -> str:
+    env_dir = os.environ.get('CONDA_PREFIX', '')
+    if env_dir:
+        base_dir = env_dir.split('envs')[0].rstrip(os.sep)
+        if base_dir:
+            return os.path.join(base_dir, 'envs', env_name)
+
+    conda_exe = os.environ.get('CONDA_EXE', '')
+    if conda_exe:
+        scripts_dir = os.path.dirname(conda_exe)
+        base_dir = os.path.dirname(scripts_dir)
+        return os.path.join(base_dir, 'envs', env_name)
+
+    return os.path.join('envs', env_name)
+
 def get_conda_key():
 
     ####################

@@ -8,6 +8,7 @@ from pinginstaller.utils import (
     get_mamba_or_conda,
     install_housekeeping,
     conda_env_exists,
+    get_default_env_prefix,
     get_verbosity_flags,
 )
 
@@ -124,6 +125,15 @@ def install_update(yml):
     ######################################
     # Install or update `ping` environment and time it
     exists = conda_env_exists(conda_key, env_name)
+    env_prefix = get_default_env_prefix(env_name)
+    if not exists and os.path.isdir(env_prefix):
+        raise RuntimeError(
+            "A folder already exists at the target conda environment path: "
+            f"{env_prefix}. It is not registered as a conda environment, so "
+            f"{conda_key} cannot create '{env_name}' there. Remove or rename "
+            "that folder, then run the installer again."
+        )
+
     start = time.perf_counter()
     if exists:
         print(f"Updating '{env_name}' environment ...")

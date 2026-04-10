@@ -73,6 +73,11 @@ def main(arg):
         from pinginstaller.Install_Update import install_update
         install_update(yml)
 
+    elif arg == 'rf_mapper':
+        yml = 'https://raw.githubusercontent.com/PINGEcosystem/PINGSeg/main/pingseg/conda/rf_mapper.yml'
+        from pinginstaller.Install_Update import install_update
+        install_update(yml)
+
     else:
         print('Env yml:', arg)
 
