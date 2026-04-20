@@ -27,9 +27,9 @@ def install(conda_key, yml, env_name='ping'):
             print(f"Verbosity enabled: {verbosity}")
         subprocess.run('''"{}" {} env create -y --file "{}"'''.format(conda_key, verbosity, yml), shell=True, check=True)
 
-        # Install pysimplegui
-        print("Installing PySimpleGUI...")
-        subprocess.run([conda_key, 'run', '-n', env_name, 'pip', 'install', '--upgrade', 'https://github.com/CameronBodine/PINGInstaller/releases/download/utils/PySimpleGUI-5.0.8-py3-none-any.whl'], check=True)
+        # # Install pysimplegui
+        # print("Installing PySimpleGUI...")
+        # subprocess.run([conda_key, 'run', '-n', env_name, 'pip', 'install', '--upgrade', 'https://github.com/CameronBodine/PINGInstaller/releases/download/utils/PySimpleGUI-5.0.8-py3-none-any.whl'], check=True)
 
         # List the environments
         subprocess.run('conda env list', shell=True)
@@ -54,9 +54,9 @@ def update(conda_key, yml, env_name='ping'):
             print(f"Verbosity enabled: {verbosity}")
         subprocess.run('''"{}" {} env update --file "{}" --prune -y'''.format(conda_key, verbosity, yml), shell=True, check=True)
 
-        # Install pysimplegui
-        print("Updating PySimpleGUI...")
-        subprocess.run([conda_key, 'run', '-n', env_name, 'pip', 'install', '--upgrade', '-i', 'https://github.com/CameronBodine/PINGInstaller/releases/download/utils/PySimpleGUI-5.0.8-py3-none-any.whl', 'PySimpleGUI'], check=True)
+        # # Install pysimplegui
+        # print("Updating PySimpleGUI...")
+        # subprocess.run([conda_key, 'run', '-n', env_name, 'pip', 'install', '--upgrade', '-i', 'https://github.com/CameronBodine/PINGInstaller/releases/download/utils/PySimpleGUI-5.0.8-py3-none-any.whl', 'PySimpleGUI'], check=True)
 
         # List the environments
         subprocess.run('conda env list', shell=True)
