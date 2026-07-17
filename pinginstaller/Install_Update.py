@@ -88,15 +88,21 @@ def update_pinginstaller():
         print('Continuing anyway...')
 
 
-def install_update(yml):
+def install_update(yml, solver='mamba'):
     """
     Main function to install or update conda environment from yml file.
-    Automatically detects and uses mamba if available for faster installs.
+    Uses requested solver (mamba/conda). Defaults to mamba preference.
     """
     subprocess.run('conda env list', shell=True)
 
-    # Get the conda/mamba key (prefer mamba if available)
-    conda_key = get_mamba_or_conda()
+    # Get conda/mamba key based on requested solver.
+    solver_name = str(solver).strip().lower() if solver is not None else 'mamba'
+    if solver_name == 'conda':
+        print('Using conda solver by request')
+        conda_key = get_conda_key()
+    else:
+        # Default behavior is to prefer mamba and gracefully fall back to conda.
+        conda_key = get_mamba_or_conda()
 
     ##############
     # Housekeeping
