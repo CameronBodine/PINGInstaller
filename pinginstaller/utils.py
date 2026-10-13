@@ -92,6 +92,121 @@ def install_housekeeping(conda_key):
         print(f'Warning: Housekeeping step failed: {e}')
         print('Continuing with installation...')
 
+def configure_short_pkgs_dir():
+    """
+    Windows only, no admin needed. Point conda/mamba's package cache at a short
+    path so extraction doesn't hit MAX_PATH (260 chars). The default cache
+    nests packages under pkgs\\https\\conda.anaconda.org\\conda-forge\\win-64\\.
+    Sets CONDA_PKGS_DIRS for this process and its subprocesses.
+    """
+    if os.name != 'nt':
+        return None
+    if os.environ.get('PINGINSTALLER_KEEP_PKGS_DIR'):
+        return None
+
+    drive = os.path.splitdrive(os.path.expanduser('~'))[0] or 'C:'
+    candidates = [
+        os.path.join(drive + os.sep, 'cpkgs'),
+        os.path.join(os.path.expanduser('~'), '.cpkgs'),
+    ]
+    for path in candidates:
+        try:
+            os.makedirs(path, exist_ok=True)
+            test = os.path.join(path, '.write_test')
+            with open(test, 'w') as f:
+                f.write('x')
+            os.remove(test)
+        except OSError:
+            continue
+        os.environ['CONDA_PKGS_DIRS'] = path
+        print(f'Using short package cache: {path}')
+        return path
+    print('Warning: could not create a short package cache directory.')
+    return None
+
+def warn_if_onedrive(*paths):
+    """Warn when paths live in OneDrive, whose sync can lock files mid-install."""
+    for p in paths:
+        if p and 'onedrive' in os.path.abspath(p).lower():
+            print(
+                f'\nWarning: "{p}" is inside OneDrive. OneDrive sync can lock '
+                'files and cause install/download failures. Pause syncing or '
+                'use a folder outside OneDrive (e.g. C:\\PINGData).\n'
+            )
+
+def long_path(path: str) -> str:
+    """Return a \\\\?\\ prefixed absolute path on Windows so Python file calls
+    work beyond 260 chars without the LongPathsEnabled registry setting."""
+    if os.name != 'nt':
+        return path
+    path = os.path.abspath(path)
+    if path.startswith('\\\\?\\'):
+        return path
+    if path.startswith('\\\\'):
+        return '\\\\?\\UNC\\' + path[2:]
+    return '\\\\?\\' + path
+
+def _force_rmtree(path: str, retries: int = 3):
+    """Remove a directory tree, tolerating read-only files and transient locks."""
+    import shutil, stat, time
+
+    def _onerror(func, p, exc_info):
+        try:
+            os.chmod(p, stat.S_IWRITE)
+            func(p)
+        except Exception:
+            pass
+
+    for _ in range(retries):
+        if not os.path.exists(path):
+            return True
+        shutil.rmtree(path, onerror=_onerror)
+        if not os.path.exists(path):
+            return True
+        time.sleep(2)
+
+    # Last resort on Windows
+    if os.name == 'nt' and os.path.exists(path):
+        subprocess.run('rmdir /s /q "{}"'.format(path), shell=True,
+                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    return not os.path.exists(path)
+
+def purge_package_cache(conda_key: str):
+    """
+    Delete the conda/mamba package cache (partially extracted packages left
+    by a failed transaction). This is only a cache; packages are re-downloaded.
+    """
+    try:
+        subprocess.run('''"{}" clean -y --all'''.format(conda_key), shell=True,
+                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except Exception:
+        pass
+
+    bases = set()
+    for var in ('CONDA_PREFIX', 'CONDA_EXE'):
+        val = os.environ.get(var, '')
+        if not val:
+            continue
+        if var == 'CONDA_PREFIX':
+            bases.add(val.split('envs')[0].rstrip(os.sep))
+        else:
+            bases.add(os.path.dirname(os.path.dirname(val)))
+
+    pkgs_dirs = [os.path.join(base, 'pkgs') for base in bases]
+    if os.environ.get('CONDA_PKGS_DIRS'):
+        pkgs_dirs.append(os.environ['CONDA_PKGS_DIRS'])
+
+    for pkgs in pkgs_dirs:
+        if not os.path.isdir(pkgs):
+            continue
+        for entry in os.listdir(pkgs):
+            full = os.path.join(pkgs, entry)
+            # Keep conda's own bookkeeping files; remove package folders
+            if os.path.isdir(full) and entry != 'cache':
+                if not _force_rmtree(long_path(full)):
+                    print(f'Warning: could not fully remove {full}')
+        _force_rmtree(long_path(os.path.join(pkgs, 'cache')))
+
 def _is_mamba_key(conda_key: str) -> bool:
     name = os.path.basename(str(conda_key)).lower()
     return 'mamba' in name

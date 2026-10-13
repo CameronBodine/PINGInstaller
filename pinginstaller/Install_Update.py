@@ -10,9 +10,46 @@ from pinginstaller.utils import (
     conda_env_exists,
     get_default_env_prefix,
     get_verbosity_flags,
+    purge_package_cache,
+    configure_short_pkgs_dir,
+    warn_if_onedrive,
+    _is_mamba_key,
 )
 
 home_path = os.path.expanduser('~')
+
+
+def _run_with_cache_recovery(conda_key, args_fmt, yml, env_name):
+    """
+    Run an env create/update command. Extraction failures (e.g. "remove_all:
+    The directory is not empty", caused by antivirus/indexer locks on the
+    package cache) are retried after purging the cache, with single-threaded
+    extraction, and finally with conda instead of mamba.
+    """
+    attempts = [(conda_key, False), (conda_key, True)]
+    if _is_mamba_key(conda_key):
+        attempts.append((get_conda_key(), True))
+
+    last_err = None
+    for i, (key, safe) in enumerate(attempts):
+        if i > 0:
+            print(f"\nRetrying (attempt {i + 1} of {len(attempts)}) using '{key}' "
+                  "after purging package cache...")
+            purge_package_cache(key)
+            time.sleep(3)
+        env = os.environ.copy()
+        if safe:
+            env['MAMBA_EXTRACT_THREADS'] = '1'
+        verbosity = get_verbosity_flags(key)
+        cmd = args_fmt.format(key, verbosity, yml)
+        try:
+            subprocess.run(cmd, shell=True, check=True, env=env)
+            return
+        except subprocess.CalledProcessError as e:
+            last_err = e
+            print(f"\nCommand failed: {e}")
+
+    raise last_err
 
 
 def install(conda_key, yml, env_name='ping'):
@@ -25,7 +62,8 @@ def install(conda_key, yml, env_name='ping'):
         verbosity = get_verbosity_flags(conda_key)
         if verbosity:
             print(f"Verbosity enabled: {verbosity}")
-        subprocess.run('''"{}" {} env create -y --file "{}"'''.format(conda_key, verbosity, yml), shell=True, check=True)
+        _run_with_cache_recovery(
+            conda_key, '''"{}" {} env create -y --file "{}"''', yml, env_name)
 
         # # Install pysimplegui
         # print("Installing PySimpleGUI...")
@@ -52,7 +90,8 @@ def update(conda_key, yml, env_name='ping'):
         verbosity = get_verbosity_flags(conda_key)
         if verbosity:
             print(f"Verbosity enabled: {verbosity}")
-        subprocess.run('''"{}" {} env update --file "{}" --prune -y'''.format(conda_key, verbosity, yml), shell=True, check=True)
+        _run_with_cache_recovery(
+            conda_key, '''"{}" {} env update --file "{}" --prune -y''', yml, env_name)
 
         # # Install pysimplegui
         # print("Updating PySimpleGUI...")
@@ -103,6 +142,10 @@ def install_update(yml, solver='mamba'):
     else:
         # Default behavior is to prefer mamba and gracefully fall back to conda.
         conda_key = get_mamba_or_conda()
+
+    # Avoid Windows MAX_PATH failures without needing admin rights
+    configure_short_pkgs_dir()
+    warn_if_onedrive(os.environ.get('CONDA_PREFIX'), home_path)
 
     ##############
     # Housekeeping
